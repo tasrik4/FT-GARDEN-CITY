@@ -1,0 +1,2427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FT GARDEN CITY - Smart Plant Watering</title>
+    <link rel="icon" href="favicon.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --secondary: #388E3C;
+            --dark: #2E7D32;
+            --light: #C8E6C9;
+            --danger: #F44336;
+            --warning: #FFC107;
+            --info: #2196F3;
+            --gray: #757575;
+            --white: #FFFFFF;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 60px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: white;
+            color: var(--dark);
+            padding: 20px 0;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            animation: fadeInDown 0.5s ease;
+            position: relative;
+            border: 1px solid #e0e0e0;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            height: 50px;
+            margin-right: 15px;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .logo-text h1 {
+            font-size: 1.8rem;
+            margin: 0;
+            line-height: 1;
+            color: var(--dark);
+        }
+
+        .logo-text p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin: 0;
+            color: var(--gray);
+        }
+
+        header p.subtitle {
+            font-size: 1.1rem;
+            color: var(--gray);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeIn 0.5s ease;
+            border: 1px solid #e0e0e0;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-header h2 {
+            font-size: 1.3rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-header i {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .indicator.on {
+            background-color: var(--primary);
+            box-shadow: 0 0 8px var(--primary);
+        }
+
+        .indicator.off {
+            background-color: var(--gray);
+        }
+
+        .indicator.warning {
+            background-color: var(--warning);
+            box-shadow: 0 0 8px var(--warning);
+        }
+
+        .indicator.danger {
+            background-color: var(--danger);
+            box-shadow: 0 0 8px var(--danger);
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 15px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.5s ease, background 0.5s ease;
+        }
+
+        .sensor-value {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--dark);
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .unit {
+            font-size: 1rem;
+            color: var(--gray);
+        }
+
+        .control-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .switch-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 28px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+        .settings-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            font-weight: 500;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        button {
+            padding: 12px 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background-color: var(--dark);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background-color: #D32F2F;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: #333;
+        }
+
+        .btn-warning:hover {
+            background-color: #FFA000;
+        }
+
+        .history-card {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s ease;
+        }
+
+        .history-item:hover {
+            background-color: #f9f9f9;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-time {
+            font-size: 0.75rem;
+            color: var(--gray);
+            margin-bottom: 3px;
+        }
+
+        .history-status {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .status-success {
+            background-color: var(--light);
+            color: var(--dark);
+        }
+
+        .status-warning {
+            background-color: #FFF3E0;
+            color: #E65100;
+        }
+
+        .status-danger {
+            background-color: #FFEBEE;
+            color: var(--danger);
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray);
+            font-size: 0.9rem;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Watering animation */
+        .watering-animation {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80px;
+            position: relative;
+            margin: 10px 0;
+        }
+
+        .water-drop {
+            width: 16px;
+            height: 16px;
+            background-color: var(--info);
+            border-radius: 50% 50% 30% 70%;
+            position: absolute;
+            opacity: 0;
+        }
+
+        .drop1 {
+            left: 30%;
+            animation: waterDrop 1.5s infinite;
+        }
+
+        .drop2 {
+            left: 50%;
+            animation: waterDrop 1.5s infinite 0.3s;
+        }
+
+        .drop3 {
+            left: 70%;
+            animation: waterDrop 1.5s infinite 0.6s;
+        }
+
+        @keyframes waterDrop {
+            0% {
+                transform: translateY(0) scale(0.3);
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(60px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .connection-status {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            background-color: var(--gray);
+            color: white;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .connection-status i {
+            font-size: 0.9rem;
+        }
+
+        .connection-status.connected {
+            background-color: var(--primary);
+        }
+
+        .connection-status.disconnected {
+            background-color: var(--danger);
+        }
+
+        /* Pump timer styles */
+        .pump-timer {
+            font-size: 0.9rem;
+            color: var(--gray);
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .pump-timer span {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        /* Device status indicator */
+        .device-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+            padding: 8px 12px;
+            border-radius: 5px;
+            background-color: #f5f5f5;
+        }
+
+        .device-status.online {
+            background-color: #E8F5E9;
+            border-left: 4px solid var(--primary);
+        }
+
+        .device-status.offline {
+            background-color: #FFEBEE;
+            border-left: 4px solid var(--danger);
+        }
+
+        .device-status i {
+            margin-right: 8px;
+        }
+
+        /* Enhanced Login Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            animation: fadeIn 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%);
+            margin: 10% auto;
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: slideInDown 0.5s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .modal-header h2 {
+            color: var(--dark);
+            font-size: 2rem;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .modal-header p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .modal-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .modal-logo img {
+            height: 50px;
+            margin-right: 15px;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
+        }
+
+        .modal-logo-text h3 {
+            font-size: 1.5rem;
+            color: var(--dark);
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .modal-logo-text p {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin: 0;
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: var(--gray);
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .close:hover {
+            color: var(--danger);
+            transform: rotate(90deg);
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .form-input-group {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .form-input {
+            padding: 15px 15px 15px 50px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+            background-color: rgba(255,255,255,0.8);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus + .input-icon {
+            color: var(--primary);
+        }
+
+        .login-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            box-shadow: 0 4px 6px rgba(76, 175, 80, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn:hover {
+            background: linear-gradient(135deg, var(--secondary), var(--dark));
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(76, 175, 80, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+        }
+
+        .login-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+
+        .login-btn:focus:not(:active)::after {
+            animation: ripple 1s ease-out;
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #FFEBEE;
+            border-radius: 5px;
+            border-left: 4px solid var(--danger);
+            animation: shake 0.5s ease;
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .forgot-password a {
+            color: var(--gray);
+            font-size: 0.8rem;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+
+        .social-login {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .social-btn.google {
+            background-color: #DB4437;
+        }
+
+        .social-btn.facebook {
+            background-color: #4267B2;
+        }
+
+        .social-btn.twitter {
+            background-color: #1DA1F2;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+        }
+
+        /* Animations */
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 1;
+            }
+            20% {
+                transform: scale(25, 25);
+                opacity: 0;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(40, 40);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        @keyframes slideInDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Floating leaves decoration */
+        .leaf {
+            position: absolute;
+            opacity: 0.2;
+            z-index: 0;
+        }
+
+        .leaf-1 {
+            top: 20%;
+            left: 10%;
+            font-size: 3rem;
+            color: var(--primary);
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .leaf-2 {
+            bottom: 15%;
+            right: 10%;
+            font-size: 2.5rem;
+            color: var(--secondary);
+            animation: float 10s ease-in-out infinite;
+        }
+
+        .leaf-3 {
+            top: 40%;
+            right: 15%;
+            font-size: 2rem;
+            color: var(--dark);
+            animation: float 7s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(5deg);
+            }
+        }
+
+        /* Soil Moisture Card Enhancements */
+        .moisture-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .moisture-visual {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 15px;
+            border-radius: 50%;
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .moisture-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, var(--primary), var(--secondary));
+            transition: height 0.5s ease;
+            border-radius: 0 0 75px 75px;
+        }
+
+        .moisture-percent {
+            position: relative;
+            z-index: 2;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .moisture-percent .unit {
+            font-size: 1rem;
+            color: var(--gray);
+        }
+
+        .moisture-status-text {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+
+        /* Enhanced watering animation */
+        .watering-scene {
+            position: relative;
+            height: 150px;
+            width: 100%;
+            margin: 15px 0;
+        }
+
+        .pump-container {
+            position: absolute;
+            bottom: 30px;
+            left: 10%;
+            width: 40px;
+            height: 60px;
+            background-color: #607D8B;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            z-index: 2;
+        }
+
+        .pump-container i {
+            font-size: 1.5rem;
+            animation: pumpPulse 0.5s infinite alternate;
+        }
+
+        @keyframes pumpPulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+
+        .water-pipe {
+            position: absolute;
+            bottom: 60px;
+            left: 30%;
+            width: 60%;
+            height: 10px;
+            background-color: #78909C;
+            z-index: 1;
+        }
+
+        .water-outlet {
+            position: absolute;
+            bottom: 60px;
+            left: 30%;
+            width: 10px;
+            height: 10px;
+            background-color: var(--info);
+            border-radius: 50%;
+            z-index: 3;
+        }
+
+        .plant-container {
+            position: absolute;
+            bottom: 0;
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            padding: 0 10%;
+        }
+
+        .plant-pot {
+            position: relative;
+            width: 60px;
+            height: 80px;
+        }
+
+        .plant {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 50px;
+            background-color: #4CAF50;
+            clip-path: polygon(0% 100%, 20% 60%, 30% 100%, 40% 60%, 50% 100%, 60% 60%, 70% 100%, 80% 60%, 100% 100%);
+            z-index: 2;
+        }
+
+        .pot {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 20px;
+            background-color: #795548;
+            border-radius: 0 0 5px 5px;
+            z-index: 1;
+        }
+
+        .water-drop {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: var(--info);
+            border-radius: 50% 50% 30% 70%;
+            opacity: 0;
+            z-index: 3;
+        }
+
+        .drop1 {
+            left: 35%;
+            animation: enhancedDrop 1.2s infinite;
+        }
+
+        .drop2 {
+            left: 45%;
+            animation: enhancedDrop 1.2s infinite 0.4s;
+        }
+
+        .drop3 {
+            left: 55%;
+            animation: enhancedDrop 1.2s infinite 0.8s;
+        }
+
+        .drop4 {
+            left: 65%;
+            animation: enhancedDrop 1.2s infinite 0.2s;
+        }
+
+        @keyframes enhancedDrop {
+            0% {
+                transform: translateY(0) scale(0.3);
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(80px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* Loading spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .logo-container {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .logo {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            
+            .logo-text {
+                align-items: center;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .connection-status {
+                bottom: 70px;
+                right: 10px;
+            }
+            
+            .modal-content {
+                padding: 30px 20px;
+                margin: 20% auto;
+            }
+            
+            .modal-logo {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .modal-logo img {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            
+            .modal-header h2 {
+                font-size: 1.8rem;
+            }
+            
+            .form-input {
+                padding: 12px 12px 12px 45px;
+            }
+            
+            .leaf {
+                display: none;
+            }
+            
+            .moisture-visual {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .watering-scene {
+                height: 120px;
+            }
+            
+            .plant-pot {
+                width: 50px;
+                height: 70px;
+            }
+            
+            .plant {
+                width: 25px;
+                height: 40px;
+            }
+            
+            .pot {
+                width: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .modal-content {
+                width: 95%;
+                padding: 25px 15px;
+            }
+            
+            .modal-header h2 {
+                font-size: 1.5rem;
+            }
+            
+            .login-btn {
+                padding: 12px;
+            }
+            
+            .watering-scene {
+                height: 100px;
+            }
+            
+            .plant-pot {
+                width: 40px;
+                height: 60px;
+            }
+            
+            .plant {
+                width: 20px;
+                height: 35px;
+            }
+            
+            .pot {
+                width: 35px;
+            }
+        }
+    </style>
+    <style>
+    :root {
+        --primary: #4CAF50;
+        --secondary: #388E3C;
+        --dark: #2E7D32;
+        --light: #C8E6C9;
+        --danger: #F44336;
+        --warning: #FFC107;
+        --info: #2196F3;
+        --gray: #757575;
+        --white: #FFFFFF;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+        background-color: #f5f5f5;
+        color: #333;
+        line-height: 1.6;
+        padding-bottom: 60px;
+    }
+
+    /* Enhanced Responsive Login Modal */
+    .modal {
+        display: block;
+        position: fixed;
+        z-index: 1001;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        animation: fadeIn 0.3s ease;
+        backdrop-filter: blur(5px);
+        overflow-y: auto;
+    }
+
+    .modal-content {
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%);
+        margin: 5% auto;
+        padding: 30px;
+        border-radius: 20px;
+        width: 90%;
+        max-width: 450px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        animation: slideInDown 0.5s ease;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .modal-content::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+
+    .close {
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        color: var(--gray);
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 2;
+    }
+
+    .close:hover {
+        color: var(--danger);
+        transform: rotate(90deg);
+    }
+
+    .modal-logo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 25px;
+        animation: fadeIn 0.8s ease;
+        text-align: center;
+    }
+
+    .modal-logo img {
+        height: 50px;
+        margin-bottom: 15px;
+        filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.1));
+    }
+
+    .modal-logo-text h3 {
+        font-size: 1.5rem;
+        color: var(--dark);
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .modal-logo-text p {
+        font-size: 0.8rem;
+        color: var(--gray);
+        margin: 0;
+    }
+
+    .modal-header {
+        text-align: center;
+        margin-bottom: 25px;
+        position: relative;
+    }
+
+    .modal-header h2 {
+        color: var(--dark);
+        font-size: 1.8rem;
+        margin-bottom: 5px;
+        font-weight: 600;
+    }
+
+    .modal-header p {
+        color: var(--gray);
+        font-size: 0.9rem;
+    }
+
+    .login-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .form-input-group {
+        position: relative;
+        margin-bottom: 15px;
+    }
+
+    .form-input {
+        padding: 15px 15px 15px 50px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        width: 100%;
+        background-color: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray);
+        transition: all 0.3s ease;
+    }
+
+    .form-input:focus+.input-icon {
+        color: var(--primary);
+    }
+
+    .login-btn {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        border: none;
+        padding: 15px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+        box-shadow: 0 4px 6px rgba(76, 175, 80, 0.3);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .login-btn:hover {
+        background: linear-gradient(135deg, var(--secondary), var(--dark));
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(76, 175, 80, 0.4);
+    }
+
+    .login-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+    }
+
+    .error-message {
+        color: var(--danger);
+        font-size: 0.9rem;
+        text-align: center;
+        margin-top: 10px;
+        padding: 10px;
+        background-color: #FFEBEE;
+        border-radius: 5px;
+        border-left: 4px solid var(--danger);
+        animation: shake 0.5s ease;
+    }
+
+    .forgot-password {
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .forgot-password a {
+        color: var(--gray);
+        font-size: 0.8rem;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .forgot-password a:hover {
+        color: var(--primary);
+        text-decoration: underline;
+    }
+
+    .social-login {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .social-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .social-btn.google {
+        background-color: #DB4437;
+    }
+
+    .social-btn.facebook {
+        background-color: #4267B2;
+    }
+
+    .social-btn.twitter {
+        background-color: #1DA1F2;
+    }
+
+    .social-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Floating leaves decoration */
+    .leaf {
+        position: absolute;
+        opacity: 0.2;
+        z-index: 0;
+        display: none; /* Hidden on mobile by default */
+    }
+
+    .leaf-1 {
+        top: 20%;
+        left: 10%;
+        font-size: 3rem;
+        color: var(--primary);
+        animation: float 8s ease-in-out infinite;
+    }
+
+    .leaf-2 {
+        bottom: 15%;
+        right: 10%;
+        font-size: 2.5rem;
+        color: var(--secondary);
+        animation: float 10s ease-in-out infinite;
+    }
+
+    .leaf-3 {
+        top: 40%;
+        right: 15%;
+        font-size: 2rem;
+        color: var(--dark);
+        animation: float 7s ease-in-out infinite reverse;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideInDown {
+        from {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0) rotate(0deg);
+        }
+        50% {
+            transform: translateY(-20px) rotate(5deg);
+        }
+    }
+
+    @keyframes shake {
+        0%, 100% {
+            transform: translateX(0);
+        }
+        10%, 30%, 50%, 70%, 90% {
+            transform: translateX(-5px);
+        }
+        20%, 40%, 60%, 80% {
+            transform: translateX(5px);
+        }
+    }
+
+    @keyframes ripple {
+        0% {
+            transform: scale(0, 0);
+            opacity: 1;
+        }
+        20% {
+            transform: scale(25, 25);
+            opacity: 0;
+        }
+        100% {
+            opacity: 0;
+            transform: scale(40, 40);
+        }
+    }
+
+    /* Loading spinner */
+    .loading-spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Responsive adjustments */
+    @media (min-width: 768px) {
+        .modal-content {
+            padding: 40px;
+            margin: 10% auto;
+        }
+
+        .modal-logo {
+            flex-direction: row;
+            text-align: left;
+        }
+
+        .modal-logo img {
+            margin-right: 15px;
+            margin-bottom: 0;
+        }
+
+        .modal-header h2 {
+            font-size: 2rem;
+        }
+
+        .leaf {
+            display: block; /* Show decorative leaves on larger screens */
+        }
+    }
+
+    @media (max-width: 480px) {
+        .modal-content {
+            padding: 25px 15px;
+            width: 95%;
+            margin: 10% auto;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .login-btn {
+            padding: 12px;
+        }
+    }
+
+    /* Very small devices (phones, 360px and down) */
+    @media (max-width: 360px) {
+        .modal-content {
+            padding: 20px 12px;
+            margin: 5% auto;
+        }
+
+        .modal-header h2 {
+            font-size: 1.3rem;
+        }
+
+        .modal-logo-text h3 {
+            font-size: 1.2rem;
+        }
+
+        .form-input {
+            padding: 10px 10px 10px 40px;
+            font-size: 0.9rem;
+        }
+
+        .input-icon {
+            font-size: 0.9rem;
+            left: 12px;
+        }
+
+        .login-btn {
+            padding: 12px;
+            font-size: 0.9rem;
+        }
+
+        .social-btn {
+            width: 36px;
+            height: 36px;
+            font-size: 1rem;
+        }
+    }
+
+    /* Landscape orientation adjustments */
+    @media (max-height: 500px) and (orientation: landscape) {
+        .modal-content {
+            margin: 2% auto;
+            max-height: 96vh;
+            overflow-y: auto;
+        }
+
+        .modal-logo {
+            margin-bottom: 15px;
+        }
+
+        .modal-header {
+            margin-bottom: 15px;
+        }
+
+        .login-form {
+            gap: 12px;
+        }
+
+        .form-input-group {
+            margin-bottom: 10px;
+        }
+    }
+</style>
+</head>
+<body>
+    <!-- Enhanced Login Modal -->
+    <div id="loginModal" class="modal" style="display: block;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            
+            <!-- Decorative leaves -->
+            <i class="fas fa-leaf leaf leaf-1"></i>
+            <i class="fas fa-leaf leaf leaf-2"></i>
+            <i class="fas fa-leaf leaf leaf-3"></i>
+            
+            <div class="modal-logo">
+                <img src="FT Garden City.png" alt="FT Garden City Logo">
+                <div class="modal-logo-text">
+                    <h3>FT GARDEN CITY</h3>
+                    <p>Grow with Grace, Live in Green</p>
+                </div>
+            </div>
+            
+            <div class="modal-header">
+                <h2>Welcome Back</h2>
+                <p>Please login to access your smart garden</p>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-input-group">
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" id="loginEmail" class="form-input" placeholder="Email" required>
+                </div>
+                
+                <div class="form-input-group">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="loginPassword" class="form-input" placeholder="Password" required>
+                </div>
+                
+                <div class="forgot-password">
+                    <a href="#">Forgot password?</a>
+                </div>
+                
+                <button type="submit" class="login-btn">
+                    <span id="loginBtnText">Login</span>
+                    <span id="loginSpinner" class="loading-spinner" style="display: none;"></span>
+                </button>
+                
+                <div id="loginError" class="error-message" style="display: none;"></div>
+                
+                <div class="social-login">
+                    <div class="social-btn google">
+                        <i class="fab fa-google"></i>
+                    </div>
+                    <div class="social-btn facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </div>
+                    <div class="social-btn twitter">
+                        <i class="fab fa-twitter"></i>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="container" id="mainContent" style="display: none;">
+        <header>
+            <div class="logo-container">
+                <img src="FT Garden City.png" alt="FT Garden City Logo" class="logo">
+                <div class="logo-text">
+                    <h1>FT GARDEN CITY</h1>
+                    <p>Grow with Grace, Live in Green</p>
+                </div>
+            </div>
+            <p class="subtitle">IoT-Based Smart Plant Watering System</p>
+        </header>
+
+        <div class="dashboard">
+            <!-- System Status Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-heartbeat"></i> System Status</h2>
+                    <i class="fas fa-server"></i>
+                </div>
+                <div class="status-indicator">
+                    <div class="indicator off" id="system-status"></div>
+                    <span id="system-status-text">Connecting...</span>
+                </div>
+                <div class="status-indicator">
+                    <div class="indicator off" id="pump-status"></div>
+                    <span id="pump-status-text">Pump: Off</span>
+                </div>
+                <div class="status-indicator">
+                    <div class="indicator off" id="mode-status"></div>
+                    <span id="mode-status-text">Mode: -</span>
+                </div>
+                
+                <!-- Enhanced watering animation -->
+                <div class="watering-scene" id="watering-scene" style="display: none;">
+                    <div class="pump-container">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <div class="water-pipe"></div>
+                    <div class="water-outlet"></div>
+                    <div class="plant-container">
+                        <div class="plant-pot">
+                            <div class="water-drop drop1"></div>
+                            <div class="plant"></div>
+                            <div class="pot"></div>
+                        </div>
+                        <div class="plant-pot">
+                            <div class="water-drop drop2"></div>
+                            <div class="plant"></div>
+                            <div class="pot"></div>
+                        </div>
+                        <div class="plant-pot">
+                            <div class="water-drop drop3"></div>
+                            <div class="plant"></div>
+                            <div class="pot"></div>
+                        </div>
+                        <div class="plant-pot">
+                            <div class="water-drop drop4"></div>
+                            <div class="plant"></div>
+                            <div class="pot"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="pump-timer">
+                    Pump On Time: <span id="pump-on-time">0</span>s | 
+                    Pump Off Time: <span id="pump-off-time">0</span>s
+                </div>
+                
+                <!-- ESP01s Device Status -->
+                <div class="device-status offline" id="device-status">
+                    <div>
+                        <i class="fas fa-microchip"></i>
+                        <span>Device Status: Offline</span>
+                    </div>
+                    <div class="indicator off" id="device-indicator"></div>
+                </div>
+            </div>
+
+            <!-- Soil Moisture Card - Enhanced Design -->
+            <div class="card moisture-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-tint"></i> Soil Moisture</h2>
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <div class="moisture-visual">
+                    <div class="moisture-fill" id="moisture-fill" style="height: 0%"></div>
+                    <div class="moisture-percent">
+                        <span id="moisture-value">--</span>
+                        <span class="unit">%</span>
+                    </div>
+                </div>
+                <div class="moisture-status-text" id="moisture-status-text">Status: -</div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="moisture-bar" style="width: 0%"></div>
+                </div>
+                <div class="status-indicator">
+                    <div class="indicator off" id="moisture-status"></div>
+                    <span>Soil Condition</span>
+                </div>
+            </div>
+
+            <!-- Control Panel Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-cogs"></i> Control Panel</h2>
+                    <i class="fas fa-sliders-h"></i>
+                </div>
+                <div class="control-panel">
+                    <div class="switch-container">
+                        <span>System Mode:</span>
+                        <label class="switch">
+                            <input type="checkbox" id="mode-switch">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="switch-container">
+                        <span>Manual Water Pump:</span>
+                        <label class="switch">
+                            <input type="checkbox" id="pump-switch" disabled>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <button id="water-now-btn" class="btn-warning">
+                        <i class="fas fa-tint"></i> Water Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- Settings Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-cog"></i> Settings</h2>
+                    <i class="fas fa-tools"></i>
+                </div>
+                <div class="settings-form">
+                    <div class="form-group">
+                        <label for="moisture-threshold">Moisture Threshold (%)</label>
+                        <input type="number" id="moisture-threshold" min="0" max="100" value="30">
+                    </div>
+                    <div class="form-group">
+                        <label for="watering-duration">Watering Duration (seconds)</label>
+                        <input type="number" id="watering-duration" min="1" max="300" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label for="schedule-day">Watering Day</label>
+                        <select id="schedule-day">
+                            <option value="everyday">Everyday</option>
+                            <option value="monday">Monday</option>
+                            <option value="tuesday">Tuesday</option>
+                            <option value="wednesday">Wednesday</option>
+                            <option value="thursday">Thursday</option>
+                            <option value="friday">Friday</option>
+                            <option value="saturday">Saturday</option>
+                            <option value="sunday">Sunday</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="schedule-time">Watering Time</label>
+                        <input type="time" id="schedule-time" value="08:00">
+                    </div>
+                    <button id="save-settings-btn">
+                        <i class="fas fa-save"></i> Save Settings
+                    </button>
+                </div>
+            </div>
+
+            <!-- Watering History Card -->
+            <div class="card history-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-history"></i> Watering History</h2>
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div id="history-list">
+                    <div class="history-item">
+                        <div>
+                            <div class="history-time">System started</div>
+                            <div>Loading data...</div>
+                        </div>
+                        <div class="history-status status-warning">Info</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>FT GARDEN CITY &copy; <span id="current-year"></span> | IoT Plant Watering System</p>
+        </footer>
+    </div>
+
+    <div class="connection-status" id="connection-status">
+        <i class="fas fa-circle-notch loading-spinner"></i>
+        <span>Connecting...</span>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAs-qq9UFkLCFLAv2HnxkNjKeBZVmsh09A",
+            authDomain: "ft-garden-city.firebaseapp.com",
+            databaseURL: "https://ft-garden-city-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "ft-garden-city",
+            storageBucket: "ft-garden-city.firebasestorage.app",
+            messagingSenderId: "537366117539",
+            appId: "1:537366117539:web:cedde001fab2298f381316"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database(app);
+        const auth = firebase.auth(app);
+
+        // DOM Elements
+        const loginModal = document.getElementById('loginModal');
+        const mainContent = document.getElementById('mainContent');
+        const closeModal = document.querySelector('.close');
+        const loginForm = document.getElementById('loginForm');
+        const loginEmail = document.getElementById('loginEmail');
+        const loginPassword = document.getElementById('loginPassword');
+        const loginError = document.getElementById('loginError');
+        const loginBtnText = document.getElementById('loginBtnText');
+        const loginSpinner = document.getElementById('loginSpinner');
+        
+        const modeSwitch = document.getElementById('mode-switch');
+        const pumpSwitch = document.getElementById('pump-switch');
+        const waterNowBtn = document.getElementById('water-now-btn');
+        const saveSettingsBtn = document.getElementById('save-settings-btn');
+        const moistureThreshold = document.getElementById('moisture-threshold');
+        const wateringDuration = document.getElementById('watering-duration');
+        const scheduleDay = document.getElementById('schedule-day');
+        const scheduleTime = document.getElementById('schedule-time');
+        const connectionStatus = document.getElementById('connection-status');
+        
+        // Status elements
+        const systemStatus = document.getElementById('system-status');
+        const systemStatusText = document.getElementById('system-status-text');
+        const pumpStatus = document.getElementById('pump-status');
+        const pumpStatusText = document.getElementById('pump-status-text');
+        const modeStatus = document.getElementById('mode-status');
+        const modeStatusText = document.getElementById('mode-status-text');
+        const moistureValue = document.getElementById('moisture-value');
+        const moistureBar = document.getElementById('moisture-bar');
+        const moistureFill = document.getElementById('moisture-fill');
+        const moistureStatus = document.getElementById('moisture-status');
+        const moistureStatusText = document.getElementById('moisture-status-text');
+        const wateringScene = document.getElementById('watering-scene');
+        const historyList = document.getElementById('history-list');
+        const currentYear = document.getElementById('current-year');
+        const pumpOnTime = document.getElementById('pump-on-time');
+        const pumpOffTime = document.getElementById('pump-off-time');
+        const deviceStatus = document.getElementById('device-status');
+        const deviceIndicator = document.getElementById('device-indicator');
+
+        // System variables
+        let threshold = 30;
+        let wateringTime = 10;
+        let scheduledDay = "everyday";
+        let scheduledTimeValue = "08:00";
+        let isSystemOnline = false;
+        let isInitialized = false;
+        let pumpOnTimer = 0;
+        let pumpOffTimer = 0;
+        let pumpTimerInterval;
+        let lastPumpState = false;
+        let lastDeviceState = false;
+        let deviceCheckInterval;
+        let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+        // Set current year in footer
+        currentYear.textContent = new Date().getFullYear();
+
+        // Check if user is already logged in
+        if (isLoggedIn) {
+            loginModal.style.display = 'none';
+            mainContent.style.display = 'block';
+            initDashboard();
+        } else {
+            loginModal.style.display = 'block';
+        }
+
+        // Close modal when clicking X
+        closeModal.addEventListener('click', () => {
+            loginModal.style.display = 'none';
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', (event) => {
+            if (event.target === loginModal) {
+                loginModal.style.display = 'none';
+            }
+        });
+
+        // Handle login form submission
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = loginEmail.value;
+            const password = loginPassword.value;
+            
+            // Show loading state
+            loginError.textContent = '';
+            loginError.style.display = 'none';
+            loginBtnText.textContent = 'Authenticating...';
+            loginSpinner.style.display = 'inline-block';
+            
+            // Simulate network delay for better UX
+            setTimeout(() => {
+                // Local verification (no Firebase auth)
+                if (email === 'tasrik@gmail.com' && password === 'tasrik321') {
+                    // Login successful
+                    loginBtnText.textContent = 'Login Successful!';
+                    localStorage.setItem('isLoggedIn', 'true');
+                    
+                    // Add success animation
+                    loginForm.querySelector('.login-btn').style.background = 'linear-gradient(135deg, #4CAF50, #2E7D32)';
+                    
+                    // Transition to dashboard
+                    setTimeout(() => {
+                        loginModal.style.display = 'none';
+                        mainContent.style.display = 'block';
+                        initDashboard();
+                        
+                        // Reset login button
+                        loginBtnText.textContent = 'Login';
+                        loginSpinner.style.display = 'none';
+                        loginForm.querySelector('.login-btn').style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
+                    }, 1000);
+                } else {
+                    // Login failed
+                    loginBtnText.textContent = 'Login';
+                    loginSpinner.style.display = 'none';
+                    loginError.textContent = 'Invalid email or password';
+                    loginError.style.display = 'block';
+                    
+                    // Add error animation
+                    loginForm.classList.add('shake');
+                    setTimeout(() => {
+                        loginForm.classList.remove('shake');
+                    }, 500);
+                }
+            }, 1500); // Simulated network delay
+        });
+
+        // Initialize the dashboard
+        function initDashboard() {
+            // Check Firebase connection
+            checkFirebaseConnection();
+            
+            // Listen for moisture value changes
+            database.ref('moisture').on('value', (snapshot) => {
+                const moisture = snapshot.val();
+                if (moisture !== null) {
+                    updateMoistureDisplay(moisture);
+                    if (isInitialized) {
+                        addHistoryEvent(`Moisture updated: ${moisture}%`, 'success');
+                    }
+                }
+            });
+
+            // Listen for pump status changes
+            database.ref('control/pumpStatus').on('value', (snapshot) => {
+                const status = snapshot.val();
+                if (status !== null) {
+                    pumpSwitch.checked = status === true;
+                    updatePumpDisplay();
+                    
+                    // Update device status when pump status changes (as a proxy for device activity)
+                    if (status !== lastPumpState) {
+                        updateDeviceStatus(true);
+                        lastPumpState = status;
+                    }
+                }
+            });
+
+            // Listen for system mode changes
+            database.ref('control/systemMode').on('value', (snapshot) => {
+                const mode = snapshot.val();
+                if (mode !== null) {
+                    modeSwitch.checked = mode === 'manual';
+                    updateModeDisplay();
+                }
+            });
+
+            // Get initial settings from Firebase
+            database.ref('settings').once('value').then((snapshot) => {
+                const settings = snapshot.val();
+                if (settings) {
+                    threshold = settings.threshold || 30;
+                    wateringTime = settings.duration || 10;
+                    scheduledDay = settings.day || "everyday";
+                    scheduledTimeValue = settings.time || "08:00";
+                    
+                    moistureThreshold.value = threshold;
+                    wateringDuration.value = wateringTime;
+                    scheduleDay.value = scheduledDay;
+                    scheduleTime.value = scheduledTimeValue;
+                }
+                isInitialized = true;
+                addHistoryEvent('System initialized successfully', 'success');
+            }).catch((error) => {
+                console.error("Error getting settings:", error);
+                addHistoryEvent('Failed to load settings', 'danger');
+            });
+
+            // Load initial history
+            loadInitialHistory();
+            
+            // Start pump timer
+            startPumpTimer();
+            
+            // Check device status immediately and then periodically
+            checkDeviceStatus();
+            deviceCheckInterval = setInterval(checkDeviceStatus, 30000); // Check every 30 seconds
+        }
+
+        // Start pump timer to track on/off durations
+        function startPumpTimer() {
+            clearInterval(pumpTimerInterval);
+            
+            pumpTimerInterval = setInterval(() => {
+                if (pumpSwitch.checked) {
+                    pumpOnTimer++;
+                    pumpOnTime.textContent = pumpOnTimer;
+                } else {
+                    pumpOffTimer++;
+                    pumpOffTime.textContent = pumpOffTimer;
+                }
+            }, 1000);
+        }
+
+        // Check device status
+        function checkDeviceStatus() {
+            // Check last communication time with the device
+            database.ref('lastCommunication').once('value').then((snapshot) => {
+                const lastCommTime = snapshot.val();
+                if (lastCommTime) {
+                    const now = new Date().getTime();
+                    const diff = now - lastCommTime;
+                    const isOnline = diff < 60000; // Consider online if last communication was within 1 minute
+                    
+                    updateDeviceStatus(isOnline);
+                    
+                    if (isOnline && !lastDeviceState) {
+                        addHistoryEvent('Device came online', 'success');
+                    } else if (!isOnline && lastDeviceState) {
+                        addHistoryEvent('Device went offline', 'danger');
+                    }
+                    
+                    lastDeviceState = isOnline;
+                } else {
+                    updateDeviceStatus(false);
+                    if (lastDeviceState) {
+                        addHistoryEvent('Device went offline', 'danger');
+                    }
+                    lastDeviceState = false;
+                }
+            }).catch((error) => {
+                console.error("Error checking device status:", error);
+                updateDeviceStatus(false);
+                if (lastDeviceState) {
+                    addHistoryEvent('Device connection error', 'danger');
+                }
+                lastDeviceState = false;
+            });
+        }
+
+        // Update device status display
+        function updateDeviceStatus(isOnline) {
+            if (isOnline) {
+                deviceStatus.className = 'device-status online';
+                deviceStatus.innerHTML = `
+                    <div>
+                        <i class="fas fa-microchip"></i>
+                        <span>Device Status: Online</span>
+                    </div>
+                    <div class="indicator on"></div>
+                `;
+                deviceIndicator.className = 'indicator on pulse';
+            } else {
+                deviceStatus.className = 'device-status offline';
+                deviceStatus.innerHTML = `
+                    <div>
+                        <i class="fas fa-microchip"></i>
+                        <span>Device Status: Offline</span>
+                    </div>
+                    <div class="indicator off"></div>
+                `;
+                deviceIndicator.className = 'indicator off';
+            }
+        }
+
+        // Load initial watering history
+        function loadInitialHistory() {
+            database.ref('history').orderByKey().limitToLast(10).once('value').then((snapshot) => {
+                const historyData = snapshot.val();
+                if (historyData) {
+                    historyList.innerHTML = '';
+                    Object.keys(historyData).reverse().forEach(key => {
+                        const event = historyData[key];
+                        addHistoryEvent(event.event || "Watering event", 
+                                      event.type || "info",
+                                      event.time || "N/A");
+                    });
+                }
+            });
+        }
+
+        // Check Firebase connection status
+        function checkFirebaseConnection() {
+            const connectedRef = database.ref(".info/connected");
+            connectedRef.on("value", (snapshot) => {
+                if (snapshot.val() === true) {
+                    connectionStatus.innerHTML = '<i class="fas fa-check-circle"></i><span>Connected</span>';
+                    connectionStatus.className = "connection-status connected";
+                    isSystemOnline = true;
+                    systemStatus.className = 'indicator on';
+                    systemStatusText.textContent = 'System Online';
+                    if (isInitialized) {
+                        addHistoryEvent('Connection established', 'success');
+                    }
+                } else {
+                    connectionStatus.innerHTML = '<i class="fas fa-exclamation-circle"></i><span>Disconnected</span>';
+                    connectionStatus.className = "connection-status disconnected";
+                    isSystemOnline = false;
+                    systemStatus.className = 'indicator danger';
+                    systemStatusText.textContent = 'System Offline';
+                    if (isInitialized) {
+                        addHistoryEvent('Connection lost', 'danger');
+                    }
+                }
+            });
+        }
+
+        // Update moisture display with enhanced visualization
+        function updateMoistureDisplay(value) {
+            moistureValue.textContent = value;
+            moistureBar.style.width = `${value}%`;
+            moistureFill.style.height = `${value}%`;
+            
+            // Update status based on threshold
+            if (value < threshold) {
+                moistureStatus.className = 'indicator danger';
+                moistureStatusText.textContent = 'Status: Needs Water';
+                moistureBar.style.background = 'linear-gradient(90deg, var(--danger), #E53935)';
+                moistureFill.style.background = 'linear-gradient(to top, var(--danger), #E53935)';
+            } else if (value < threshold + 10) {
+                moistureStatus.className = 'indicator warning';
+                moistureStatusText.textContent = 'Status: Getting Dry';
+                moistureBar.style.background = 'linear-gradient(90deg, var(--warning), #FB8C00)';
+                moistureFill.style.background = 'linear-gradient(to top, var(--warning), #FB8C00)';
+            } else {
+                moistureStatus.className = 'indicator on';
+                moistureStatusText.textContent = 'Status: Optimal';
+                moistureBar.style.background = 'linear-gradient(90deg, var(--primary), var(--secondary))';
+                moistureFill.style.background = 'linear-gradient(to top, var(--primary), var(--secondary))';
+            }
+        }
+
+        // Update mode display
+        function updateModeDisplay() {
+            if (!modeSwitch.checked) {
+                modeStatus.className = 'indicator on';
+                modeStatusText.textContent = 'Mode: Auto';
+                pumpSwitch.disabled = true;
+                database.ref('control/systemMode').set('auto');
+            } else {
+                modeStatus.className = 'indicator warning';
+                modeStatusText.textContent = 'Mode: Manual';
+                pumpSwitch.disabled = false;
+                database.ref('control/systemMode').set('manual');
+            }
+            if (isInitialized) {
+                addHistoryEvent(`Mode changed to ${modeSwitch.checked ? 'Manual' : 'Auto'}`, 'success');
+            }
+        }
+
+        // Update pump display with enhanced animation
+        function updatePumpDisplay() {
+            if (pumpSwitch.checked) {
+                pumpStatus.className = 'indicator on pulse';
+                pumpStatusText.textContent = 'Pump: On';
+                wateringScene.style.display = 'block';
+                database.ref('control/pumpStatus').set(true);
+            } else {
+                pumpStatus.className = 'indicator off';
+                pumpStatusText.textContent = 'Pump: Off';
+                wateringScene.style.display = 'none';
+                database.ref('control/pumpStatus').set(false);
+            }
+            if (isInitialized) {
+                addHistoryEvent(`Pump turned ${pumpSwitch.checked ? 'On' : 'Off'}`, 'success');
+            }
+        }
+
+        // Start watering process
+        function startWatering() {
+            if (pumpSwitch.checked) return;
+            
+            pumpSwitch.checked = true;
+            updatePumpDisplay();
+            addHistoryEvent('Manual watering started', 'success');
+            
+            // Auto turn off after watering duration
+            setTimeout(() => {
+                if (pumpSwitch.checked) { // Only turn off if still on
+                    pumpSwitch.checked = false;
+                    updatePumpDisplay();
+                    addHistoryEvent('Manual watering completed', 'success');
+                }
+            }, wateringTime * 1000);
+        }
+
+        // Add event to history log
+        function addHistoryEvent(message, type, customTime) {
+            const now = new Date();
+            const timeString = customTime || now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            
+            let statusClass = 'status-success';
+            let statusText = 'Success';
+            
+            if (type === 'warning') {
+                statusClass = 'status-warning';
+                statusText = 'Warning';
+            } else if (type === 'danger') {
+                statusClass = 'status-danger';
+                statusText = 'Alert';
+            } else if (type === 'info') {
+                statusClass = 'status-success';
+                statusText = 'Info';
+            }
+            
+            historyItem.innerHTML = `
+                <div>
+                    <div class="history-time">${timeString}</div>
+                    <div>${message}</div>
+                </div>
+                <div class="history-status ${statusClass}">${statusText}</div>
+            `;
+            
+            historyList.insertBefore(historyItem, historyList.firstChild);
+            
+            // Limit history items
+            if (historyList.children.length > 10) {
+                historyList.removeChild(historyList.lastChild);
+            }
+            
+            // Save to Firebase
+            if (isInitialized) {
+                const timestamp = new Date().getTime();
+                database.ref('history/' + timestamp).set({
+                    event: message,
+                    time: timeString,
+                    type: type
+                });
+            }
+        }
+
+        // Save settings to Firebase
+        function saveSettings() {
+            threshold = parseInt(moistureThreshold.value);
+            wateringTime = parseInt(wateringDuration.value);
+            scheduledDay = scheduleDay.value;
+            scheduledTimeValue = scheduleTime.value;
+            
+            database.ref('settings').set({
+                threshold: threshold,
+                duration: wateringTime,
+                day: scheduledDay,
+                time: scheduledTimeValue
+            }).then(() => {
+                addHistoryEvent('Settings updated', 'success');
+                
+                // Show confirmation
+                saveSettingsBtn.innerHTML = '<i class="fas fa-check"></i> Saved!';
+                saveSettingsBtn.style.backgroundColor = '#4CAF50';
+                setTimeout(() => {
+                    saveSettingsBtn.innerHTML = '<i class="fas fa-save"></i> Save Settings';
+                    saveSettingsBtn.style.backgroundColor = '';
+                }, 2000);
+            }).catch((error) => {
+                addHistoryEvent('Failed to save settings', 'danger');
+                console.error("Error saving settings:", error);
+            });
+        }
+
+        // Event Listeners
+        modeSwitch.addEventListener('change', updateModeDisplay);
+        pumpSwitch.addEventListener('change', updatePumpDisplay);
+        waterNowBtn.addEventListener('click', startWatering);
+        saveSettingsBtn.addEventListener('click', saveSettings);
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            clearInterval(deviceCheckInterval);
+            clearInterval(pumpTimerInterval);
+        });
+    </script>
+</body>
+</html>
