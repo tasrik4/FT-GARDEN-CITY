@@ -35,7 +35,7 @@
             background-color: #f5f5f5;
             color: #333;
             line-height: 1.6;
-            padding-bottom: 60px;
+            padding-bottom: 80px;
         }
 
         .container {
@@ -49,7 +49,7 @@
             color: var(--dark);
             padding: 20px 0;
             border-radius: 10px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             box-shadow: var(--shadow);
             text-align: center;
             animation: fadeInDown 0.5s ease;
@@ -94,6 +94,81 @@
             color: var(--gray);
         }
 
+        /* Navigation Bar */
+        .nav-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--gray);
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+
+        .nav-item i {
+            font-size: 1.4rem;
+            margin-bottom: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            transform: translateY(-10px);
+        }
+
+        .nav-item.active i {
+            color: var(--primary);
+            transform: scale(1.2);
+        }
+
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background-color: var(--primary);
+            border-radius: 50%;
+        }
+
+        .nav-item .nav-text {
+            transition: all 0.3s ease;
+            opacity: 1;
+        }
+
+        .nav-item.active .nav-text {
+            font-weight: 600;
+        }
+
+        /* Page Transitions */
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Control Page */
         .dashboard {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -383,539 +458,7 @@
             color: var(--danger);
         }
 
-        footer {
-            text-align: center;
-            padding: 20px;
-            color: var(--gray);
-            font-size: 0.9rem;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: white;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .pulse {
-            animation: pulse 1.5s infinite;
-        }
-
         /* Watering animation */
-        .watering-animation {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 80px;
-            position: relative;
-            margin: 10px 0;
-        }
-
-        .water-drop {
-            width: 16px;
-            height: 16px;
-            background-color: var(--info);
-            border-radius: 50% 50% 30% 70%;
-            position: absolute;
-            opacity: 0;
-        }
-
-        .drop1 {
-            left: 30%;
-            animation: waterDrop 1.5s infinite;
-        }
-
-        .drop2 {
-            left: 50%;
-            animation: waterDrop 1.5s infinite 0.3s;
-        }
-
-        .drop3 {
-            left: 70%;
-            animation: waterDrop 1.5s infinite 0.6s;
-        }
-
-        @keyframes waterDrop {
-            0% {
-                transform: translateY(0) scale(0.3);
-                opacity: 0;
-            }
-            50% {
-                opacity: 0.8;
-            }
-            100% {
-                transform: translateY(60px) scale(1);
-                opacity: 0;
-            }
-        }
-
-        .connection-status {
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            background-color: var(--gray);
-            color: white;
-            z-index: 1000;
-            box-shadow: var(--shadow);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .connection-status i {
-            font-size: 0.9rem;
-        }
-
-        .connection-status.connected {
-            background-color: var(--primary);
-        }
-
-        .connection-status.disconnected {
-            background-color: var(--danger);
-        }
-
-        /* Pump timer styles */
-        .pump-timer {
-            font-size: 0.9rem;
-            color: var(--gray);
-            text-align: center;
-            margin-top: 10px;
-        }
-
-        .pump-timer span {
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        /* Device status indicator */
-        .device-status {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 10px;
-            padding: 8px 12px;
-            border-radius: 5px;
-            background-color: #f5f5f5;
-        }
-
-        .device-status.online {
-            background-color: #E8F5E9;
-            border-left: 4px solid var(--primary);
-        }
-
-        .device-status.offline {
-            background-color: #FFEBEE;
-            border-left: 4px solid var(--danger);
-        }
-
-        .device-status i {
-            margin-right: 8px;
-        }
-
-        /* Enhanced Login Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1001;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.7);
-            animation: fadeIn 0.3s ease;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%);
-            margin: 10% auto;
-            padding: 40px;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 450px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            animation: slideInDown 0.5s ease;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.3);
-        }
-
-        .modal-content::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-        }
-
-        .modal-header {
-            text-align: center;
-            margin-bottom: 30px;
-            position: relative;
-        }
-
-        .modal-header h2 {
-            color: var(--dark);
-            font-size: 2rem;
-            margin-bottom: 5px;
-            font-weight: 600;
-        }
-
-        .modal-header p {
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-
-        .modal-logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 25px;
-            animation: fadeIn 0.8s ease;
-        }
-
-        .modal-logo img {
-            height: 50px;
-            margin-right: 15px;
-            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
-        }
-
-        .modal-logo-text h3 {
-            font-size: 1.5rem;
-            color: var(--dark);
-            margin: 0;
-            font-weight: 600;
-        }
-
-        .modal-logo-text p {
-            font-size: 0.8rem;
-            color: var(--gray);
-            margin: 0;
-        }
-
-        .close {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            color: var(--gray);
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 2;
-        }
-
-        .close:hover {
-            color: var(--danger);
-            transform: rotate(90deg);
-        }
-
-        .login-form {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-
-        .form-input-group {
-            position: relative;
-            margin-bottom: 10px;
-        }
-
-        .form-input {
-            padding: 15px 15px 15px 50px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            width: 100%;
-            background-color: rgba(255,255,255,0.8);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
-        }
-
-        .input-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--gray);
-            transition: all 0.3s ease;
-        }
-
-        .form-input:focus + .input-icon {
-            color: var(--primary);
-        }
-
-        .login-btn {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-            box-shadow: 0 4px 6px rgba(76, 175, 80, 0.3);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .login-btn:hover {
-            background: linear-gradient(135deg, var(--secondary), var(--dark));
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(76, 175, 80, 0.4);
-        }
-
-        .login-btn:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
-        }
-
-        .login-btn::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 5px;
-            height: 5px;
-            background: rgba(255, 255, 255, 0.5);
-            opacity: 0;
-            border-radius: 100%;
-            transform: scale(1, 1) translate(-50%);
-            transform-origin: 50% 50%;
-        }
-
-        .login-btn:focus:not(:active)::after {
-            animation: ripple 1s ease-out;
-        }
-
-        .error-message {
-            color: var(--danger);
-            font-size: 0.9rem;
-            text-align: center;
-            margin-top: 10px;
-            padding: 10px;
-            background-color: #FFEBEE;
-            border-radius: 5px;
-            border-left: 4px solid var(--danger);
-            animation: shake 0.5s ease;
-        }
-
-        .forgot-password {
-            text-align: center;
-            margin-top: 10px;
-        }
-
-        .forgot-password a {
-            color: var(--gray);
-            font-size: 0.8rem;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .forgot-password a:hover {
-            color: var(--primary);
-            text-decoration: underline;
-        }
-
-        .social-login {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .social-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .social-btn.google {
-            background-color: #DB4437;
-        }
-
-        .social-btn.facebook {
-            background-color: #4267B2;
-        }
-
-        .social-btn.twitter {
-            background-color: #1DA1F2;
-        }
-
-        .social-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
-        }
-
-        /* Animations */
-        @keyframes ripple {
-            0% {
-                transform: scale(0, 0);
-                opacity: 1;
-            }
-            20% {
-                transform: scale(25, 25);
-                opacity: 0;
-            }
-            100% {
-                opacity: 0;
-                transform: scale(40, 40);
-            }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
-        }
-
-        @keyframes slideInDown {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        /* Floating leaves decoration */
-        .leaf {
-            position: absolute;
-            opacity: 0.2;
-            z-index: 0;
-        }
-
-        .leaf-1 {
-            top: 20%;
-            left: 10%;
-            font-size: 3rem;
-            color: var(--primary);
-            animation: float 8s ease-in-out infinite;
-        }
-
-        .leaf-2 {
-            bottom: 15%;
-            right: 10%;
-            font-size: 2.5rem;
-            color: var(--secondary);
-            animation: float 10s ease-in-out infinite;
-        }
-
-        .leaf-3 {
-            top: 40%;
-            right: 15%;
-            font-size: 2rem;
-            color: var(--dark);
-            animation: float 7s ease-in-out infinite reverse;
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0) rotate(0deg);
-            }
-            50% {
-                transform: translateY(-20px) rotate(5deg);
-            }
-        }
-
-        /* Soil Moisture Card Enhancements */
-        .moisture-card {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .moisture-visual {
-            position: relative;
-            width: 150px;
-            height: 150px;
-            margin: 0 auto 15px;
-            border-radius: 50%;
-            background: #f5f5f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
-        }
-
-        .moisture-fill {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, var(--primary), var(--secondary));
-            transition: height 0.5s ease;
-            border-radius: 0 0 75px 75px;
-        }
-
-        .moisture-percent {
-            position: relative;
-            z-index: 2;
-            font-size: 2.5rem;
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        .moisture-percent .unit {
-            font-size: 1rem;
-            color: var(--gray);
-        }
-
-        .moisture-status-text {
-            text-align: center;
-            font-size: 0.9rem;
-            color: var(--gray);
-            margin-top: 5px;
-        }
-
-        /* Enhanced watering animation */
         .watering-scene {
             position: relative;
             height: 150px;
@@ -1052,6 +595,172 @@
             }
         }
 
+        /* Schedule Page */
+        .schedule-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .schedule-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid #e0e0e0;
+        }
+
+        .schedule-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .days-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .day-checkbox {
+            display: none;
+        }
+
+        .day-label {
+            padding: 8px 12px;
+            background-color: #f5f5f5;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .day-checkbox:checked + .day-label {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .time-inputs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .time-input-group {
+            flex: 1;
+        }
+
+        /* About Page */
+        .about-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid #e0e0e0;
+        }
+
+        .about-section {
+            margin-bottom: 25px;
+        }
+
+        .about-section h2 {
+            color: var(--dark);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .about-section h2 i {
+            color: var(--primary);
+        }
+
+        .about-section p {
+            margin-bottom: 10px;
+            color: var(--gray);
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .feature-item {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .feature-item h3 {
+            color: var(--dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-item i {
+            color: var(--primary);
+        }
+
+        /* Connection Status */
+        .connection-status {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            background-color: var(--gray);
+            color: white;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .connection-status i {
+            font-size: 0.9rem;
+        }
+
+        .connection-status.connected {
+            background-color: var(--primary);
+        }
+
+        .connection-status.disconnected {
+            background-color: var(--danger);
+        }
+
+        /* Device status indicator */
+        .device-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+            padding: 8px 12px;
+            border-radius: 5px;
+            background-color: #f5f5f5;
+        }
+
+        .device-status.online {
+            background-color: #E8F5E9;
+            border-left: 4px solid var(--primary);
+        }
+
+        .device-status.offline {
+            background-color: #FFEBEE;
+            border-left: 4px solid var(--danger);
+        }
+
+        .device-status i {
+            margin-right: 8px;
+        }
+
         /* Loading spinner */
         .loading-spinner {
             display: inline-block;
@@ -1065,6 +774,85 @@
 
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Enhanced Control Panel */
+        .mode-selector {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .mode-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mode-option i {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .mode-option.active {
+            background-color: var(--light);
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .manual-controls {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--warning);
+            margin-top: 10px;
+        }
+
+        .timer-display {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .timer-running {
+            color: var(--dark);
+            font-weight: 500;
         }
 
         /* Responsive adjustments */
@@ -1087,7 +875,7 @@
                 font-size: 2rem;
             }
             
-            .dashboard {
+            .dashboard, .schedule-container {
                 grid-template-columns: 1fr;
             }
             
@@ -1096,36 +884,13 @@
                 right: 10px;
             }
             
-            .modal-content {
-                padding: 30px 20px;
-                margin: 20% auto;
+            .nav-item {
+                font-size: 0.7rem;
+                padding: 5px 5px;
             }
             
-            .modal-logo {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .modal-logo img {
-                margin-right: 0;
-                margin-bottom: 10px;
-            }
-            
-            .modal-header h2 {
-                font-size: 1.8rem;
-            }
-            
-            .form-input {
-                padding: 12px 12px 12px 45px;
-            }
-            
-            .leaf {
-                display: none;
-            }
-            
-            .moisture-visual {
-                width: 120px;
-                height: 120px;
+            .nav-item i {
+                font-size: 1.2rem;
             }
             
             .watering-scene {
@@ -1148,17 +913,25 @@
         }
 
         @media (max-width: 480px) {
-            .modal-content {
-                width: 95%;
-                padding: 25px 15px;
+            .container {
+                padding: 15px;
             }
             
-            .modal-header h2 {
-                font-size: 1.5rem;
+            .card, .schedule-card, .about-container {
+                padding: 15px;
             }
             
-            .login-btn {
-                padding: 12px;
+            .nav-item .nav-text {
+                display: none;
+            }
+            
+            .nav-item {
+                padding: 10px;
+            }
+            
+            .nav-item i {
+                margin-bottom: 0;
+                font-size: 1.4rem;
             }
             
             .watering-scene {
@@ -1194,21 +967,7 @@
         --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    body {
-        background-color: #f5f5f5;
-        color: #333;
-        line-height: 1.6;
-        padding-bottom: 60px;
-    }
-
-    /* Enhanced Responsive Login Modal */
+    /* Enhanced Login Modal */
     .modal {
         display: block;
         position: fixed;
@@ -1225,7 +984,7 @@
 
     .modal-content {
         background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%);
-        margin: 5% auto;
+        margin: 10% auto;
         padding: 30px;
         border-radius: 20px;
         width: 90%;
@@ -1737,181 +1496,286 @@
             <p class="subtitle">IoT-Based Smart Plant Watering System</p>
         </header>
 
-        <div class="dashboard">
-            <!-- System Status Card -->
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-heartbeat"></i> System Status</h2>
-                    <i class="fas fa-server"></i>
-                </div>
-                <div class="status-indicator">
-                    <div class="indicator off" id="system-status"></div>
-                    <span id="system-status-text">Connecting...</span>
-                </div>
-                <div class="status-indicator">
-                    <div class="indicator off" id="pump-status"></div>
-                    <span id="pump-status-text">Pump: Off</span>
-                </div>
-                <div class="status-indicator">
-                    <div class="indicator off" id="mode-status"></div>
-                    <span id="mode-status-text">Mode: -</span>
-                </div>
-                
-                <!-- Enhanced watering animation -->
-                <div class="watering-scene" id="watering-scene" style="display: none;">
-                    <div class="pump-container">
-                        <i class="fas fa-tint"></i>
+        <!-- Pages -->
+        <div class="page active" id="control-page">
+            <div class="dashboard">
+                <!-- System Status Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-heartbeat"></i> System Status</h2>
+                        <i class="fas fa-server"></i>
                     </div>
-                    <div class="water-pipe"></div>
-                    <div class="water-outlet"></div>
-                    <div class="plant-container">
-                        <div class="plant-pot">
-                            <div class="water-drop drop1"></div>
-                            <div class="plant"></div>
-                            <div class="pot"></div>
+                    <div class="status-indicator">
+                        <div class="indicator off" id="system-status"></div>
+                        <span id="system-status-text">Connecting...</span>
+                    </div>
+                    <div class="status-indicator">
+                        <div class="indicator off" id="pump-status"></div>
+                        <span id="pump-status-text">Pump: Off</span>
+                    </div>
+                    <div class="status-indicator">
+                        <div class="indicator off" id="mode-status"></div>
+                        <span id="mode-status-text">Mode: -</span>
+                    </div>
+                    
+                    <!-- Enhanced watering animation -->
+                    <div class="watering-scene" id="watering-scene" style="display: none;">
+                        <div class="pump-container">
+                            <i class="fas fa-tint"></i>
                         </div>
-                        <div class="plant-pot">
-                            <div class="water-drop drop2"></div>
-                            <div class="plant"></div>
-                            <div class="pot"></div>
+                        <div class="water-pipe"></div>
+                        <div class="water-outlet"></div>
+                        <div class="plant-container">
+                            <div class="plant-pot">
+                                <div class="water-drop drop1"></div>
+                                <div class="plant"></div>
+                                <div class="pot"></div>
+                            </div>
+                            <div class="plant-pot">
+                                <div class="water-drop drop2"></div>
+                                <div class="plant"></div>
+                                <div class="pot"></div>
+                            </div>
+                            <div class="plant-pot">
+                                <div class="water-drop drop3"></div>
+                                <div class="plant"></div>
+                                <div class="pot"></div>
+                            </div>
+                            <div class="plant-pot">
+                                <div class="water-drop drop4"></div>
+                                <div class="plant"></div>
+                                <div class="pot"></div>
+                            </div>
                         </div>
-                        <div class="plant-pot">
-                            <div class="water-drop drop3"></div>
-                            <div class="plant"></div>
-                            <div class="pot"></div>
-                        </div>
-                        <div class="plant-pot">
-                            <div class="water-drop drop4"></div>
-                            <div class="plant"></div>
-                            <div class="pot"></div>
-                        </div>
                     </div>
-                </div>
-                
-                <div class="pump-timer">
-                    Pump On Time: <span id="pump-on-time">0</span>s | 
-                    Pump Off Time: <span id="pump-off-time">0</span>s
-                </div>
-                
-                <!-- ESP01s Device Status -->
-                <div class="device-status offline" id="device-status">
-                    <div>
-                        <i class="fas fa-microchip"></i>
-                        <span>Device Status: Offline</span>
+                    
+                    <div class="pump-timer">
+                        Pump On Time: <span id="pump-on-time">0</span>s | 
+                        Pump Off Time: <span id="pump-off-time">0</span>s
                     </div>
-                    <div class="indicator off" id="device-indicator"></div>
-                </div>
-            </div>
-
-            <!-- Soil Moisture Card - Enhanced Design -->
-            <div class="card moisture-card">
-                <div class="card-header">
-                    <h2><i class="fas fa-tint"></i> Soil Moisture</h2>
-                    <i class="fas fa-seedling"></i>
-                </div>
-                <div class="moisture-visual">
-                    <div class="moisture-fill" id="moisture-fill" style="height: 0%"></div>
-                    <div class="moisture-percent">
-                        <span id="moisture-value">--</span>
-                        <span class="unit">%</span>
-                    </div>
-                </div>
-                <div class="moisture-status-text" id="moisture-status-text">Status: -</div>
-                <div class="progress-container">
-                    <div class="progress-bar" id="moisture-bar" style="width: 0%"></div>
-                </div>
-                <div class="status-indicator">
-                    <div class="indicator off" id="moisture-status"></div>
-                    <span>Soil Condition</span>
-                </div>
-            </div>
-
-            <!-- Control Panel Card -->
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-cogs"></i> Control Panel</h2>
-                    <i class="fas fa-sliders-h"></i>
-                </div>
-                <div class="control-panel">
-                    <div class="switch-container">
-                        <span>System Mode:</span>
-                        <label class="switch">
-                            <input type="checkbox" id="mode-switch">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <div class="switch-container">
-                        <span>Manual Water Pump:</span>
-                        <label class="switch">
-                            <input type="checkbox" id="pump-switch" disabled>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <button id="water-now-btn" class="btn-warning">
-                        <i class="fas fa-tint"></i> Water Now
-                    </button>
-                </div>
-            </div>
-
-            <!-- Settings Card -->
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-cog"></i> Settings</h2>
-                    <i class="fas fa-tools"></i>
-                </div>
-                <div class="settings-form">
-                    <div class="form-group">
-                        <label for="moisture-threshold">Moisture Threshold (%)</label>
-                        <input type="number" id="moisture-threshold" min="0" max="100" value="30">
-                    </div>
-                    <div class="form-group">
-                        <label for="watering-duration">Watering Duration (seconds)</label>
-                        <input type="number" id="watering-duration" min="1" max="300" value="10">
-                    </div>
-                    <div class="form-group">
-                        <label for="schedule-day">Watering Day</label>
-                        <select id="schedule-day">
-                            <option value="everyday">Everyday</option>
-                            <option value="monday">Monday</option>
-                            <option value="tuesday">Tuesday</option>
-                            <option value="wednesday">Wednesday</option>
-                            <option value="thursday">Thursday</option>
-                            <option value="friday">Friday</option>
-                            <option value="saturday">Saturday</option>
-                            <option value="sunday">Sunday</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="schedule-time">Watering Time</label>
-                        <input type="time" id="schedule-time" value="08:00">
-                    </div>
-                    <button id="save-settings-btn">
-                        <i class="fas fa-save"></i> Save Settings
-                    </button>
-                </div>
-            </div>
-
-            <!-- Watering History Card -->
-            <div class="card history-card">
-                <div class="card-header">
-                    <h2><i class="fas fa-history"></i> Watering History</h2>
-                    <i class="fas fa-clock"></i>
-                </div>
-                <div id="history-list">
-                    <div class="history-item">
+                    
+                    <!-- ESP01s Device Status -->
+                    <div class="device-status offline" id="device-status">
                         <div>
-                            <div class="history-time">System started</div>
-                            <div>Loading data...</div>
+                            <i class="fas fa-microchip"></i>
+                            <span>Device Status: Offline</span>
                         </div>
-                        <div class="history-status status-warning">Info</div>
+                        <div class="indicator off" id="device-indicator"></div>
+                    </div>
+                </div>
+
+                <!-- Control Panel Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-cogs"></i> Control Panel</h2>
+                        <i class="fas fa-sliders-h"></i>
+                    </div>
+                    
+                    <!-- Enhanced Mode Selector -->
+                    <div class="mode-selector">
+                        <div class="mode-option" id="auto-mode" data-mode="auto">
+                            <i class="fas fa-robot"></i>
+                            <span>Auto</span>
+                        </div>
+                        <div class="mode-option" id="manual-mode" data-mode="manual">
+                            <i class="fas fa-hand-paper"></i>
+                            <span>Manual</span>
+                        </div>
+                    </div>
+                    
+                    <div class="manual-controls" id="manual-controls" style="display: none;">
+                        <div class="switch-container">
+                            <span>Manual Water Pump:</span>
+                            <label class="switch">
+                                <input type="checkbox" id="pump-switch">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Timer Duration (seconds)</label>
+                            <input type="number" id="manual-timer" min="1" max="3600" value="30">
+                        </div>
+                        
+                        <div class="timer-display" id="timer-display"></div>
+                        
+                        <button id="water-now-btn" class="btn-warning">
+                            <i class="fas fa-tint"></i> Water Now
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Watering History Card -->
+                <div class="card history-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-history"></i> Watering History</h2>
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div id="history-list">
+                        <div class="history-item">
+                            <div>
+                                <div class="history-time">System started</div>
+                                <div>Loading data...</div>
+                            </div>
+                            <div class="history-status status-warning">Info</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <footer>
-            <p>FT GARDEN CITY &copy; <span id="current-year"></span> | IoT Plant Watering System</p>
-        </footer>
+        <!-- Schedule Page -->
+        <div class="page" id="schedule-page">
+            <div class="schedule-container">
+                <div class="schedule-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-calendar-alt"></i> Watering Schedule</h2>
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <form class="schedule-form">
+                        <div class="form-group">
+                            <label>Select Days</label>
+                            <div class="days-selector">
+                                <input type="checkbox" id="monday" class="day-checkbox" checked>
+                                <label for="monday" class="day-label">Monday</label>
+                                
+                                <input type="checkbox" id="tuesday" class="day-checkbox" checked>
+                                <label for="tuesday" class="day-label">Tuesday</label>
+                                
+                                <input type="checkbox" id="wednesday" class="day-checkbox" checked>
+                                <label for="wednesday" class="day-label">Wednesday</label>
+                                
+                                <input type="checkbox" id="thursday" class="day-checkbox" checked>
+                                <label for="thursday" class="day-label">Thursday</label>
+                                
+                                <input type="checkbox" id="friday" class="day-checkbox" checked>
+                                <label for="friday" class="day-label">Friday</label>
+                                
+                                <input type="checkbox" id="saturday" class="day-checkbox">
+                                <label for="saturday" class="day-label">Saturday</label>
+                                
+                                <input type="checkbox" id="sunday" class="day-checkbox">
+                                <label for="sunday" class="day-label">Sunday</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="watering-time">Watering Time</label>
+                            <input type="time" id="watering-time" value="08:00">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Watering Duration</label>
+                            <div class="time-inputs">
+                                <div class="time-input-group">
+                                    <label for="hours">Hours</label>
+                                    <input type="number" id="hours" min="0" max="23" value="0">
+                                </div>
+                                <div class="time-input-group">
+                                    <label for="minutes">Minutes</label>
+                                    <input type="number" id="minutes" min="0" max="59" value="10">
+                                </div>
+                                <div class="time-input-group">
+                                    <label for="seconds">Seconds</label>
+                                    <input type="number" id="seconds" min="0" max="59" value="0">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="button" id="save-schedule-btn">
+                            <i class="fas fa-save"></i> Save Schedule
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-list"></i> Scheduled Tasks</h2>
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div id="scheduled-tasks">
+                        <div class="history-item">
+                            <div>
+                                <div class="history-time">Everyday at 08:00</div>
+                                <div>Duration: 10 minutes</div>
+                            </div>
+                            <div class="history-status status-success">Active</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Page -->
+        <div class="page" id="about-page">
+            <div class="about-container">
+                <div class="about-section">
+                    <h2><i class="fas fa-info-circle"></i> About FT Garden City</h2>
+                    <p>FT Garden City is an IoT-based smart plant watering system that helps you maintain your garden effortlessly. Our system monitors soil moisture levels and automatically waters your plants when needed, ensuring optimal growth conditions.</p>
+                    <p>With our mobile-friendly dashboard, you can control and monitor your garden from anywhere, at any time.</p>
+                </div>
+                
+                <div class="about-section">
+                    <h2><i class="fas fa-question-circle"></i> How to Use</h2>
+                    <p>Follow these simple steps to get started with your smart garden:</p>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <h3><i class="fas fa-plug"></i> Setup</h3>
+                            <p>Connect your device to power and place the moisture sensor in your plant's soil.</p>
+                        </div>
+                        <div class="feature-item">
+                            <h3><i class="fas fa-sliders-h"></i> Control</h3>
+                            <p>Use the dashboard to switch between auto and manual modes, or water plants instantly.</p>
+                        </div>
+                        <div class="feature-item">
+                            <h3><i class="fas fa-calendar-alt"></i> Schedule</h3>
+                            <p>Set up watering schedules for specific days and times that work best for your plants.</p>
+                        </div>
+                        <div class="feature-item">
+                            <h3><i class="fas fa-chart-line"></i> Monitor</h3>
+                            <p>Track soil moisture levels and watering history to understand your plants' needs.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="about-section">
+                    <h2><i class="fas fa-cogs"></i> System Features</h2>
+                    <p>Our smart watering system includes these advanced features:</p>
+                    <ul style="margin-left: 20px; color: var(--gray); line-height: 1.8;">
+                        <li>Real-time soil moisture monitoring</li>
+                        <li>Automatic and manual watering modes</li>
+                        <li>Customizable watering schedules</li>
+                        <li>Watering history and system logs</li>
+                        <li>Mobile-friendly responsive dashboard</li>
+                        <li>Secure cloud-based data storage</li>
+                        <li>Device status monitoring</li>
+                    </ul>
+                </div>
+                
+                <div class="about-section">
+                    <h2><i class="fas fa-envelope"></i> Contact Us</h2>
+                    <p>For support or inquiries, please contact our team:</p>
+                    <p><i class="fas fa-envelope"></i> Email: support@ftgardencity.com</p>
+                    <p><i class="fas fa-phone"></i> Phone: +880 1234 567890</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Bar -->
+        <div class="nav-container">
+            <a href="#" class="nav-item active" data-page="control-page">
+                <i class="fas fa-tint"></i>
+                <span class="nav-text">Control</span>
+            </a>
+            <a href="#" class="nav-item" data-page="schedule-page">
+                <i class="fas fa-calendar-alt"></i>
+                <span class="nav-text">Schedule</span>
+            </a>
+            <a href="#" class="nav-item" data-page="about-page">
+                <i class="fas fa-info-circle"></i>
+                <span class="nav-text">About</span>
+            </a>
+        </div>
     </div>
 
     <div class="connection-status" id="connection-status">
@@ -1947,41 +1811,43 @@
         const loginBtnText = document.getElementById('loginBtnText');
         const loginSpinner = document.getElementById('loginSpinner');
         
-        const modeSwitch = document.getElementById('mode-switch');
+        // Control Page Elements
+        const autoModeBtn = document.getElementById('auto-mode');
+        const manualModeBtn = document.getElementById('manual-mode');
+        const manualControls = document.getElementById('manual-controls');
         const pumpSwitch = document.getElementById('pump-switch');
+        const manualTimerInput = document.getElementById('manual-timer');
+        const timerDisplay = document.getElementById('timer-display');
         const waterNowBtn = document.getElementById('water-now-btn');
-        const saveSettingsBtn = document.getElementById('save-settings-btn');
-        const moistureThreshold = document.getElementById('moisture-threshold');
-        const wateringDuration = document.getElementById('watering-duration');
-        const scheduleDay = document.getElementById('schedule-day');
-        const scheduleTime = document.getElementById('schedule-time');
+        const wateringScene = document.getElementById('watering-scene');
+        const historyList = document.getElementById('history-list');
         const connectionStatus = document.getElementById('connection-status');
-        
-        // Status elements
         const systemStatus = document.getElementById('system-status');
         const systemStatusText = document.getElementById('system-status-text');
         const pumpStatus = document.getElementById('pump-status');
         const pumpStatusText = document.getElementById('pump-status-text');
         const modeStatus = document.getElementById('mode-status');
         const modeStatusText = document.getElementById('mode-status-text');
-        const moistureValue = document.getElementById('moisture-value');
-        const moistureBar = document.getElementById('moisture-bar');
-        const moistureFill = document.getElementById('moisture-fill');
-        const moistureStatus = document.getElementById('moisture-status');
-        const moistureStatusText = document.getElementById('moisture-status-text');
-        const wateringScene = document.getElementById('watering-scene');
-        const historyList = document.getElementById('history-list');
-        const currentYear = document.getElementById('current-year');
         const pumpOnTime = document.getElementById('pump-on-time');
         const pumpOffTime = document.getElementById('pump-off-time');
         const deviceStatus = document.getElementById('device-status');
         const deviceIndicator = document.getElementById('device-indicator');
+        
+        // Schedule Page Elements
+        const saveScheduleBtn = document.getElementById('save-schedule-btn');
+        const wateringTimeInput = document.getElementById('watering-time');
+        const hoursInput = document.getElementById('hours');
+        const minutesInput = document.getElementById('minutes');
+        const secondsInput = document.getElementById('seconds');
+        const scheduledTasks = document.getElementById('scheduled-tasks');
+        
+        // Navigation Elements
+        const navItems = document.querySelectorAll('.nav-item');
+        const pages = document.querySelectorAll('.page');
 
         // System variables
         let threshold = 30;
         let wateringTime = 10;
-        let scheduledDay = "everyday";
-        let scheduledTimeValue = "08:00";
         let isSystemOnline = false;
         let isInitialized = false;
         let pumpOnTimer = 0;
@@ -1991,9 +1857,9 @@
         let lastDeviceState = false;
         let deviceCheckInterval;
         let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-
-        // Set current year in footer
-        currentYear.textContent = new Date().getFullYear();
+        let currentMode = 'auto';
+        let manualTimerInterval;
+        let remainingManualTime = 0;
 
         // Check if user is already logged in
         if (isLoggedIn) {
@@ -2071,17 +1937,6 @@
             // Check Firebase connection
             checkFirebaseConnection();
             
-            // Listen for moisture value changes
-            database.ref('moisture').on('value', (snapshot) => {
-                const moisture = snapshot.val();
-                if (moisture !== null) {
-                    updateMoistureDisplay(moisture);
-                    if (isInitialized) {
-                        addHistoryEvent(`Moisture updated: ${moisture}%`, 'success');
-                    }
-                }
-            });
-
             // Listen for pump status changes
             database.ref('control/pumpStatus').on('value', (snapshot) => {
                 const status = snapshot.val();
@@ -2101,7 +1956,7 @@
             database.ref('control/systemMode').on('value', (snapshot) => {
                 const mode = snapshot.val();
                 if (mode !== null) {
-                    modeSwitch.checked = mode === 'manual';
+                    currentMode = mode;
                     updateModeDisplay();
                 }
             });
@@ -2112,13 +1967,6 @@
                 if (settings) {
                     threshold = settings.threshold || 30;
                     wateringTime = settings.duration || 10;
-                    scheduledDay = settings.day || "everyday";
-                    scheduledTimeValue = settings.time || "08:00";
-                    
-                    moistureThreshold.value = threshold;
-                    wateringDuration.value = wateringTime;
-                    scheduleDay.value = scheduledDay;
-                    scheduleTime.value = scheduledTimeValue;
                 }
                 isInitialized = true;
                 addHistoryEvent('System initialized successfully', 'success');
@@ -2136,6 +1984,141 @@
             // Check device status immediately and then periodically
             checkDeviceStatus();
             deviceCheckInterval = setInterval(checkDeviceStatus, 30000); // Check every 30 seconds
+            
+            // Initialize navigation
+            initNavigation();
+            
+            // Initialize mode selector
+            initModeSelector();
+            
+            // Initialize manual timer
+            initManualTimer();
+            
+            // Load schedule
+            loadSchedule();
+            
+            // Start schedule checker
+            startScheduleChecker();
+        }
+
+        // Initialize navigation
+        function initNavigation() {
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const pageId = item.getAttribute('data-page');
+                    
+                    // Update active state
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+                    
+                    // Show selected page
+                    pages.forEach(page => page.classList.remove('active'));
+                    document.getElementById(pageId).classList.add('active');
+                });
+            });
+        }
+        
+        // Initialize mode selector
+        function initModeSelector() {
+            autoModeBtn.addEventListener('click', () => {
+                currentMode = 'auto';
+                database.ref('control/systemMode').set('auto');
+                updateModeDisplay();
+            });
+            
+            manualModeBtn.addEventListener('click', () => {
+                currentMode = 'manual';
+                database.ref('control/systemMode').set('manual');
+                updateModeDisplay();
+            });
+        }
+        
+        // Initialize manual timer
+        function initManualTimer() {
+            pumpSwitch.addEventListener('change', () => {
+                if (pumpSwitch.checked) {
+                    // Start the manual timer when pump is turned on
+                    const duration = parseInt(manualTimerInput.value) || 30;
+                    remainingManualTime = duration;
+                    updateManualTimerDisplay();
+                    
+                    // Clear any existing timer
+                    if (manualTimerInterval) {
+                        clearInterval(manualTimerInterval);
+                    }
+                    
+                    // Start new timer
+                    manualTimerInterval = setInterval(() => {
+                        remainingManualTime--;
+                        updateManualTimerDisplay();
+                        
+                        if (remainingManualTime <= 0) {
+                            clearInterval(manualTimerInterval);
+                            pumpSwitch.checked = false;
+                            updatePumpDisplay();
+                            timerDisplay.textContent = "Timer completed";
+                            timerDisplay.classList.remove('timer-running');
+                        }
+                    }, 1000);
+                } else {
+                    // Clear timer when pump is turned off
+                    if (manualTimerInterval) {
+                        clearInterval(manualTimerInterval);
+                    }
+                    timerDisplay.textContent = "";
+                }
+                
+                updatePumpDisplay();
+            });
+            
+            waterNowBtn.addEventListener('click', () => {
+                if (currentMode !== 'manual') {
+                    addHistoryEvent('Please switch to manual mode first', 'warning');
+                    return;
+                }
+                
+                const duration = parseInt(manualTimerInput.value) || 30;
+                if (duration <= 0) {
+                    addHistoryEvent('Please set a valid duration', 'warning');
+                    return;
+                }
+                
+                // Turn on pump
+                pumpSwitch.checked = true;
+                remainingManualTime = duration;
+                updateManualTimerDisplay();
+                
+                // Clear any existing timer
+                if (manualTimerInterval) {
+                    clearInterval(manualTimerInterval);
+                }
+                
+                // Start new timer
+                manualTimerInterval = setInterval(() => {
+                    remainingManualTime--;
+                    updateManualTimerDisplay();
+                    
+                    if (remainingManualTime <= 0) {
+                        clearInterval(manualTimerInterval);
+                        pumpSwitch.checked = false;
+                        updatePumpDisplay();
+                        timerDisplay.textContent = "Timer completed";
+                        timerDisplay.classList.remove('timer-running');
+                    }
+                }, 1000);
+                
+                updatePumpDisplay();
+                addHistoryEvent(`Manual watering started for ${duration} seconds`, 'success');
+            });
+        }
+        
+        // Update manual timer display
+        function updateManualTimerDisplay() {
+            if (remainingManualTime > 0) {
+                timerDisplay.textContent = `Time remaining: ${remainingManualTime}s`;
+                timerDisplay.classList.add('timer-running');
+            }
         }
 
         // Start pump timer to track on/off durations
@@ -2229,6 +2212,93 @@
                 }
             });
         }
+        
+        // Load schedule from Firebase
+        function loadSchedule() {
+            database.ref('schedule').once('value').then((snapshot) => {
+                const schedule = snapshot.val();
+                if (schedule) {
+                    // Update UI with saved schedule
+                    updateScheduledTasks(schedule.days || [], schedule.time || "08:00", {
+                        hours: Math.floor(schedule.duration / 3600),
+                        minutes: Math.floor((schedule.duration % 3600) / 60),
+                        seconds: schedule.duration % 60
+                    });
+                    
+                    // Update form inputs
+                    if (schedule.days) {
+                        document.querySelectorAll('.day-checkbox').forEach(checkbox => {
+                            checkbox.checked = schedule.days.includes(checkbox.id);
+                        });
+                    }
+                    
+                    if (schedule.time) {
+                        wateringTimeInput.value = schedule.time;
+                    }
+                    
+                    if (schedule.duration) {
+                        const hours = Math.floor(schedule.duration / 3600);
+                        const minutes = Math.floor((schedule.duration % 3600) / 60);
+                        const seconds = schedule.duration % 60;
+                        
+                        hoursInput.value = hours;
+                        minutesInput.value = minutes;
+                        secondsInput.value = seconds;
+                    }
+                }
+            });
+        }
+        
+        // Start schedule checker
+        function startScheduleChecker() {
+            setInterval(() => {
+                checkScheduledWatering();
+            }, 60000); // Check every minute
+        }
+        
+        // Check if it's time for scheduled watering
+        function checkScheduledWatering() {
+            database.ref('schedule').once('value').then((snapshot) => {
+                const schedule = snapshot.val();
+                if (!schedule || !schedule.days || !schedule.time || !schedule.duration) {
+                    return;
+                }
+                
+                const now = new Date();
+                const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+                const currentTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+                
+                // Check if today is a scheduled day
+                const isScheduledDay = schedule.days.includes(currentDay) || 
+                                      schedule.days.includes('everyday') || 
+                                      schedule.days.length === 7;
+                
+                if (!isScheduledDay) {
+                    return;
+                }
+                
+                // Check if current time matches scheduled time (within 1 minute)
+                const [scheduledHour, scheduledMinute] = schedule.time.split(':').map(Number);
+                const currentHour = now.getHours();
+                const currentMinute = now.getMinutes();
+                
+                if (currentHour === scheduledHour && currentMinute === scheduledMinute) {
+                    // Time to water!
+                    if (currentMode === 'auto') {
+                        // Turn on pump for scheduled duration
+                        database.ref('control/pumpStatus').set(true);
+                        
+                        // Turn off after duration
+                        setTimeout(() => {
+                            database.ref('control/pumpStatus').set(false);
+                            addHistoryEvent('Scheduled watering completed', 'success');
+                        }, schedule.duration * 1000);
+                        
+                        addHistoryEvent(`Scheduled watering started for ${schedule.duration} seconds`, 'success');
+                    }
+                }
+            });
+        }
 
         // Check Firebase connection status
         function checkFirebaseConnection() {
@@ -2256,46 +2326,32 @@
             });
         }
 
-        // Update moisture display with enhanced visualization
-        function updateMoistureDisplay(value) {
-            moistureValue.textContent = value;
-            moistureBar.style.width = `${value}%`;
-            moistureFill.style.height = `${value}%`;
-            
-            // Update status based on threshold
-            if (value < threshold) {
-                moistureStatus.className = 'indicator danger';
-                moistureStatusText.textContent = 'Status: Needs Water';
-                moistureBar.style.background = 'linear-gradient(90deg, var(--danger), #E53935)';
-                moistureFill.style.background = 'linear-gradient(to top, var(--danger), #E53935)';
-            } else if (value < threshold + 10) {
-                moistureStatus.className = 'indicator warning';
-                moistureStatusText.textContent = 'Status: Getting Dry';
-                moistureBar.style.background = 'linear-gradient(90deg, var(--warning), #FB8C00)';
-                moistureFill.style.background = 'linear-gradient(to top, var(--warning), #FB8C00)';
-            } else {
-                moistureStatus.className = 'indicator on';
-                moistureStatusText.textContent = 'Status: Optimal';
-                moistureBar.style.background = 'linear-gradient(90deg, var(--primary), var(--secondary))';
-                moistureFill.style.background = 'linear-gradient(to top, var(--primary), var(--secondary))';
-            }
-        }
-
         // Update mode display
         function updateModeDisplay() {
-            if (!modeSwitch.checked) {
+            if (currentMode === 'auto') {
+                autoModeBtn.classList.add('active');
+                manualModeBtn.classList.remove('active');
+                manualControls.style.display = 'none';
                 modeStatus.className = 'indicator on';
                 modeStatusText.textContent = 'Mode: Auto';
                 pumpSwitch.disabled = true;
-                database.ref('control/systemMode').set('auto');
+                
+                // Clear any manual timer
+                if (manualTimerInterval) {
+                    clearInterval(manualTimerInterval);
+                    timerDisplay.textContent = "";
+                }
             } else {
+                autoModeBtn.classList.remove('active');
+                manualModeBtn.classList.add('active');
+                manualControls.style.display = 'block';
                 modeStatus.className = 'indicator warning';
                 modeStatusText.textContent = 'Mode: Manual';
                 pumpSwitch.disabled = false;
-                database.ref('control/systemMode').set('manual');
             }
+            
             if (isInitialized) {
-                addHistoryEvent(`Mode changed to ${modeSwitch.checked ? 'Manual' : 'Auto'}`, 'success');
+                addHistoryEvent(`Mode changed to ${currentMode === 'manual' ? 'Manual' : 'Auto'}`, 'success');
             }
         }
 
@@ -2315,24 +2371,6 @@
             if (isInitialized) {
                 addHistoryEvent(`Pump turned ${pumpSwitch.checked ? 'On' : 'Off'}`, 'success');
             }
-        }
-
-        // Start watering process
-        function startWatering() {
-            if (pumpSwitch.checked) return;
-            
-            pumpSwitch.checked = true;
-            updatePumpDisplay();
-            addHistoryEvent('Manual watering started', 'success');
-            
-            // Auto turn off after watering duration
-            setTimeout(() => {
-                if (pumpSwitch.checked) { // Only turn off if still on
-                    pumpSwitch.checked = false;
-                    updatePumpDisplay();
-                    addHistoryEvent('Manual watering completed', 'success');
-                }
-            }, wateringTime * 1000);
         }
 
         // Add event to history log
@@ -2383,44 +2421,100 @@
             }
         }
 
-        // Save settings to Firebase
-        function saveSettings() {
-            threshold = parseInt(moistureThreshold.value);
-            wateringTime = parseInt(wateringDuration.value);
-            scheduledDay = scheduleDay.value;
-            scheduledTimeValue = scheduleTime.value;
+        // Save schedule settings
+        function saveSchedule() {
+            const selectedDays = [];
+            document.querySelectorAll('.day-checkbox:checked').forEach(checkbox => {
+                selectedDays.push(checkbox.id);
+            });
             
-            database.ref('settings').set({
-                threshold: threshold,
-                duration: wateringTime,
-                day: scheduledDay,
-                time: scheduledTimeValue
+            const wateringTime = wateringTimeInput.value;
+            const duration = {
+                hours: parseInt(hoursInput.value) || 0,
+                minutes: parseInt(minutesInput.value) || 0,
+                seconds: parseInt(secondsInput.value) || 0
+            };
+            
+            const totalSeconds = (duration.hours * 3600) + (duration.minutes * 60) + duration.seconds;
+            
+            database.ref('schedule').set({
+                days: selectedDays,
+                time: wateringTime,
+                duration: totalSeconds
             }).then(() => {
-                addHistoryEvent('Settings updated', 'success');
+                // Update the scheduled tasks display
+                updateScheduledTasks(selectedDays, wateringTime, duration);
                 
                 // Show confirmation
-                saveSettingsBtn.innerHTML = '<i class="fas fa-check"></i> Saved!';
-                saveSettingsBtn.style.backgroundColor = '#4CAF50';
+                saveScheduleBtn.innerHTML = '<i class="fas fa-check"></i> Saved!';
+                saveScheduleBtn.style.backgroundColor = '#4CAF50';
                 setTimeout(() => {
-                    saveSettingsBtn.innerHTML = '<i class="fas fa-save"></i> Save Settings';
-                    saveSettingsBtn.style.backgroundColor = '';
+                    saveScheduleBtn.innerHTML = '<i class="fas fa-save"></i> Save Schedule';
+                    saveScheduleBtn.style.backgroundColor = '';
                 }, 2000);
+                
+                addHistoryEvent('Watering schedule updated', 'success');
             }).catch((error) => {
-                addHistoryEvent('Failed to save settings', 'danger');
-                console.error("Error saving settings:", error);
+                console.error("Error saving schedule:", error);
+                addHistoryEvent('Failed to save schedule', 'danger');
             });
         }
 
+        // Update scheduled tasks display
+        function updateScheduledTasks(days, time, duration) {
+            scheduledTasks.innerHTML = '';
+            
+            if (days.length === 7) {
+                // Everyday
+                const task = document.createElement('div');
+                task.className = 'history-item';
+                task.innerHTML = `
+                    <div>
+                        <div class="history-time">Everyday at ${time}</div>
+                        <div>Duration: ${formatDuration(duration)}</div>
+                    </div>
+                    <div class="history-status status-success">Active</div>
+                `;
+                scheduledTasks.appendChild(task);
+            } else {
+                days.forEach(day => {
+                    const task = document.createElement('div');
+                    task.className = 'history-item';
+                    task.innerHTML = `
+                        <div>
+                            <div class="history-time">${capitalizeFirstLetter(day)} at ${time}</div>
+                            <div>Duration: ${formatDuration(duration)}</div>
+                        </div>
+                        <div class="history-status status-success">Active</div>
+                    `;
+                    scheduledTasks.appendChild(task);
+                });
+            }
+        }
+
+        // Format duration for display
+        function formatDuration(duration) {
+            let parts = [];
+            if (duration.hours > 0) parts.push(`${duration.hours} hour${duration.hours !== 1 ? 's' : ''}`);
+            if (duration.minutes > 0) parts.push(`${duration.minutes} minute${duration.minutes !== 1 ? 's' : ''}`);
+            if (duration.seconds > 0 || parts.length === 0) parts.push(`${duration.seconds} second${duration.seconds !== 1 ? 's' : ''}`);
+            
+            return parts.join(' ');
+        }
+
+        // Capitalize first letter of a string
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
         // Event Listeners
-        modeSwitch.addEventListener('change', updateModeDisplay);
-        pumpSwitch.addEventListener('change', updatePumpDisplay);
-        waterNowBtn.addEventListener('click', startWatering);
-        saveSettingsBtn.addEventListener('click', saveSettings);
+        saveScheduleBtn.addEventListener('click', saveSchedule);
 
         // Clean up on page unload
         window.addEventListener('beforeunload', () => {
             clearInterval(deviceCheckInterval);
             clearInterval(pumpTimerInterval);
+            clearInterval(manualTimerInterval);
         });
     </script>
 </body>
